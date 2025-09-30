@@ -11,7 +11,6 @@ class Item {
         this.valor = valor;
     }
 
-    // Getters
     public String getNome() {
         return nome;
     }
