@@ -1,0 +1,133 @@
+import java.util.Scanner;
+
+public class Main {
+    private Jogador chico;
+    private Loja loja;
+    private JogoAdivinharNumero miniJogo;
+    private Scanner scanner = new Scanner(System.in);
+
+    public Main() {
+        chico = new Jogador("Chico");
+        loja = new Loja();
+        miniJogo = new JogoAdivinharNumero();
+    }
+
+    // Inicia o jogo
+    public void iniciarJogo() {
+        System.out.println("🐵 Bem-vindo ao CHICO CARE! Cuide do seu pet virtual. 🐵");
+        boolean jogoAcabou = false;
+
+        while (!jogoAcabou) {
+            chico.mostrarStatus();
+            exibirMenu();
+            int escolha = obterInteiroValido("Escolha uma opção: ");
+
+            jogoAcabou = lidarComEscolhaMenu(escolha);
+            if (!jogoAcabou) {
+                chico.diminuirAtributos(); // Decaimento após ação
+                if (chico.estaMorto()) {
+                    jogoAcabou = true;
+                    System.out.println("💀 Chico morreu... Eu tentei!");
+                }
+            }
+        }
+        System.out.println("😢 Fim de jogo. Obrigado por jogar!");
+    }
+
+    // Exibe menu
+    private void exibirMenu() {
+        System.out.println("\n=== MENU ===");
+        System.out.println("1. 🍽️ Alimentar Chico");
+        System.out.println("2. 🎾 Brincar com Chico");
+        System.out.println("3. 😴 Colocar para dormir");
+        System.out.println("4. 🏪 Loja");
+        System.out.println("5. 🎯 Jogar Adivinhe o Número");
+        System.out.println("6. 🚪 Sair");
+    }
+
+    // Lida com escolha do menu
+    private boolean lidarComEscolhaMenu(int escolha) {
+        switch (escolha) {
+            case 1: // Alimentar
+                System.out.println("🍖 Você alimentou Chico!");
+                chico.diminuirFome(0.3);
+                chico.aumentarFelicidade(0.1);
+                chico.diminuirEnergia(0.1);
+                break;
+            case 2: // Brincar
+                System.out.println("🎾 Você brincou com Chico!");
+                chico.aumentarFelicidade(0.4);
+                chico.diminuirEnergia(0.3);
+                chico.diminuirFome(0.2);
+                break;
+            case 3: // Dormir
+                System.out.println("😴 Chico foi dormir!");
+                chico.aumentarEnergia(0.5);
+                chico.diminuirFome(0.1);
+                break;
+            case 4: // Loja
+                lidarComLoja();
+                break;
+            case 5: // Minijogo
+                lidarComMiniJogo();
+                break;
+            case 6: // Sair
+                return true;
+            default:
+                System.out.println("❌ Opção inválida!");
+        }
+        return false;
+    }
+
+    // Lida com loja
+    private void lidarComLoja() {
+        loja.exibirItens();
+        int escolhaItem = obterInteiroValido("Escolha um item (0 para voltar): ");
+        if (escolhaItem == 0)
+            return;
+
+        Item selecionado = loja.getItemPorIndice(escolhaItem);
+        if (selecionado != null) {
+            if (chico.comprarItem(selecionado)) {
+                System.out.println("✅ Item comprado e usado! " + selecionado.getNome());
+                chico.mostrarStatus(); // Mostra status atualizado
+            } else {
+                System.out.println("❌ Bitcoins insuficientes!");
+            }
+        } else {
+            System.out.println("❌ Item inválido!");
+        }
+    }
+
+    // Lida com minijogo
+    private void lidarComMiniJogo() {
+        System.out.println("Escolha o nível:");
+        System.out.println("1. Fácil (10 BTC)");
+        System.out.println("2. Médio (25 BTC)");
+        System.out.println("3. Difícil (50 BTC)");
+        int nivel = obterInteiroValido("Nível: ");
+        int recompensa = miniJogo.iniciarJogo(nivel, chico);
+        if (recompensa > 0) {
+            chico.adicionarBitcoins(recompensa);
+            System.out.println("💰 Você ganhou " + recompensa + " BTC!");
+        }
+    }
+
+    // Lê inteiro válido
+    private int obterInteiroValido(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            if (scanner.hasNextInt()) {
+                return scanner.nextInt();
+            } else {
+                System.out.println("❌ Digite um número inteiro válido!");
+                scanner.next(); // Limpa input
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Main jogo = new Main();
+        jogo.iniciarJogo();
+    }
+}
