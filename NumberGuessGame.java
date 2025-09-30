@@ -1,11 +1,15 @@
 import java.util.Random;
 import java.util.Scanner;
 
-class JogoAdivinharNumero {
+class NumberGuessGame {
     private Random aleatorio = new Random();
+    private Scanner entrada;
 
-    // Inicia jogo e retorna recompensa
-    public int iniciarJogo(int nivel, Jogador jogador) {
+    public NumberGuessGame(Scanner entrada) {
+        this.entrada = entrada;
+    }
+
+    public int iniciarJogo(int nivel, Player jogador) {
         if (jogador.getEnergia() < 10) {
             System.out.println("💤 Energia insuficiente! Precisa de pelo menos 10 pontos.");
             return 0;
@@ -33,7 +37,7 @@ class JogoAdivinharNumero {
                 return 0;
         }
 
-        System.out.println("\n🎯 === ADIVINHE O NÚMERO - Nível " + getNomeNivel(nivel) + " ===");
+        System.out.println("\n🎯 === ADIVINHE O NÚMERO - " + getNomeNivel(nivel) + " ===");
         int secreto = aleatorio.nextInt(max + 1);
         int tentativasUsadas = jogarNivel(secreto, max, tentativas);
         if (tentativasUsadas > 0 && tentativasUsadas <= tentativas) {
@@ -45,19 +49,16 @@ class JogoAdivinharNumero {
         }
     }
 
-    // Joga o nível
     private int jogarNivel(int secreto, int max, int tentativas) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            for (int i = 1; i <= tentativas; i++) {
-                System.out.print("Tentativa " + i + "/" + tentativas + ": Digite um número de 0 a " + max + ": ");
-                int palpite = scanner.nextInt();
-                if (palpite == secreto) {
-                    return i;
-                } else if (palpite < secreto) {
-                    System.out.println("📈 O número é MAIOR!");
-                } else {
-                    System.out.println("📉 O número é MENOR!");
-                }
+        for (int i = 1; i <= tentativas; i++) {
+            System.out.print("Tentativa " + i + "/" + tentativas + ": Digite um número de 0 a " + max + ": ");
+            int palpite = entrada.nextInt();
+            if (palpite == secreto) {
+                return i;
+            } else if (palpite < secreto) {
+                System.out.println("📈 O número é MAIOR!");
+            } else {
+                System.out.println("📉 O número é MENOR!");
             }
         }
         return -1; // Falhou
