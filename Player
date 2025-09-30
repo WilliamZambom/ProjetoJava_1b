@@ -1,0 +1,133 @@
+class Jogador {
+    private String nome;
+    private double saude;
+    private double fome;
+    private double felicidade;
+    private double energia;
+    private double bitcoins;
+
+    public Jogador(String nome) {
+        this.nome = nome;
+        this.saude = 100.0;
+        this.fome = 100.0;
+        this.felicidade = 100.0;
+        this.energia = 100.0;
+        this.bitcoins = 50.0;
+    }
+
+    // Aumenta saúde
+    public void aumentarSaude(double quantidade) {
+        saude = Math.min(100.0, saude + quantidade);
+    }
+
+    // Diminui fome (aumenta saciedade)
+    public void diminuirFome(double quantidade) {
+        fome = Math.min(100.0, fome + quantidade);
+    }
+
+    // Aumenta felicidade
+    public void aumentarFelicidade(double quantidade) {
+        felicidade = Math.min(100.0, felicidade + quantidade);
+    }
+
+    // Aumenta energia
+    public void aumentarEnergia(double quantidade) {
+        energia = Math.min(100.0, energia + quantidade);
+    }
+
+    // Diminui bitcoins
+    public void diminuirBitcoins(double quantidade) {
+        bitcoins = Math.max(0.0, bitcoins - quantidade);
+    }
+
+    // Compra item e aplica efeito se possível
+    public boolean comprarItem(Item item) {
+        if (bitcoins >= item.getPreco()) {
+            diminuirBitcoins(item.getPreco());
+            aplicarEfeitoItem(item);
+            return true;
+        }
+        return false;
+    }
+
+    // Aplica efeito do item
+    private void aplicarEfeitoItem(Item item) {
+        String tipo = item.getTipo();
+        double efeito = item.getValor();
+        if (tipo.equals("COMIDA")) {
+            diminuirFome(efeito);
+            aumentarFelicidade(0.1 * efeito);
+        } else if (tipo.equals("POCAO")) {
+            aumentarSaude(efeito);
+        } else if (tipo.equals("BRINQUEDO")) {
+            aumentarFelicidade(efeito);
+            aumentarEnergia(0.1 * efeito);
+        } else if (tipo.equals("ENERGETICO")) {
+            aumentarEnergia(efeito);
+            diminuirFome(-0.1 * efeito);
+        }
+    }
+
+    // Exibe status com barras e avisos
+    public void mostrarStatus() {
+        int s = (int) saude;
+        int f = (int) fome;
+        int fel = (int) felicidade;
+        int e = (int) energia;
+        int b = (int) bitcoins;
+
+        System.out.println("=== STATUS DO CHICO ===");
+        imprimirBarra("❤️ Saúde", s);
+        imprimirBarra("🍖 Fome", f);
+        imprimirBarra("😊 Felicidade", fel);
+        imprimirBarra("⚡ Energia", e);
+        System.out.println("💰 Bitcoins: " + b);
+
+        // Avisos
+        if (saude < 30)
+            System.out.println("💔 Chico está doente!");
+        if (fome < 20)
+            System.out.println("🍽️ Chico está faminto!");
+        if (felicidade < 25)
+            System.out.println("😢 Chico está triste!");
+        if (energia < 15)
+            System.out.println("💤 Chico está exausto!");
+    }
+
+    // Imprime barra de progresso
+    private void imprimirBarra(String rotulo, int valor) {
+        int barras = valor / 5;
+        String barra = "█".repeat(barras) + "░".repeat(20 - barras);
+        System.out.printf("%s: [%s] %d%%\n", rotulo, barra, valor);
+    }
+
+    // Verifica se morto
+    public boolean estaMorto() {
+        return saude <= 0 || fome <= 0 || felicidade <= 0 || energia <= 0;
+    }
+
+    // Decaimento gradual
+    public void diminuirAtributos() {
+        saude = Math.max(0, saude - 0.2);
+        fome = Math.max(0, fome - 0.3);
+        felicidade = Math.max(0, felicidade - 0.1);
+        energia = Math.max(0, energia - 0.2);
+    }
+
+    // Getters
+    public double getBitcoins() {
+        return bitcoins;
+    }
+
+    public void adicionarBitcoins(double quantidade) {
+        bitcoins += quantidade;
+    }
+
+    public double getEnergia() {
+        return energia;
+    }
+
+    public void diminuirEnergia(double quantidade) {
+        energia = Math.max(0, energia - quantidade);
+    }
+}
